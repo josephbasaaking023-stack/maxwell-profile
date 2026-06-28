@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel · Maxwell Boamah Amofa</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Same CSS as contact.html - copy the entire style block */
+    :root {
+      --wine: #6B1D2F;
+      --wine-light: #8B2A3F;
+      --wine-dark: #4A1520;
+      --gold: #C9A84C;
+      --gold-light: #E8D5A3;
+      --gold-pale: #F5EDD6;
+      --cream: #FAF6EE;
+      --white: #FFFFFF;
+      --dark: #1A1A1A;
+      --text: #2C2C2C;
+      --shadow: 0 8px 32px rgba(107, 29, 47, 0.12);
+      --shadow-hover: 0 12px 48px rgba(107, 29, 47, 0.2);
+      --transition: all 0.3s ease;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.6;
+      padding-top: 80px;
+    }
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--white);
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      padding: 0 2rem;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      border-bottom: 3px solid var(--gold);
+    }
+    .nav-container {
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-brand a {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--wine);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .nav-brand a i { color: var(--gold); }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+    .hamburger .bar {
+      width: 28px;
+      height: 3px;
+      background: var(--wine);
+      border-radius: 3px;
+      transition: var(--transition);
+    }
+    .hamburger.active .bar:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.active .bar:nth-child(2) { opacity: 0; }
+    .hamburger.active .bar:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      list-style: none;
+    }
+    .nav-item { list-style: none; }
+    .nav-link {
+      color: var(--text);
+      text-decoration: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 50px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    .nav-link:hover { color: var(--wine); background: var(--gold-pale); }
+    .nav-link.active { color: var(--white); background: var(--wine); }
+    .nav-link.admin-link {
+      background: var(--gold);
+      color: var(--wine-dark);
+      font-weight: 600;
+    }
+    .nav-link.admin-link:hover { background: var(--wine); color: var(--white); }
+    .main-content { max-width: 1440px; margin: 0 auto; padding: 2rem 1.5rem; }
+    
+    .page-header {
+      background: var(--white);
+      padding: 2rem 2.5rem;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      border-left: 6px solid var(--gold);
+    }
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      color: var(--wine);
+      margin-bottom: 0.5rem;
+    }
+    .page-header p { color: #7a6b55; font-size: 1.1rem; }
+    
+    .admin-container {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(201, 168, 76, 0.15);
+    }
+    .admin-container h2 {
+      font-family: 'Playfair Display', serif;
+      color: var(--wine);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .admin-container h2 i { color: var(--gold); }
+    
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .admin-item {
+      background: var(--cream);
+      border-radius: 16px;
+      padding: 1.2rem;
+      border: 1px solid rgba(201, 168, 76, 0.15);
+    }
+    .admin-item label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: block;
+      margin-bottom: 0.4rem;
+      color: var(--wine);
+    }
+    .admin-item input,
+    .admin-item textarea {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border-radius: 12px;
+      border: 2px solid #e8e0d4;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      background: var(--white);
+    }
+    .admin-item input:focus,
+    .admin-item textarea:focus {
+      border-color: var(--gold);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+    }
+    .admin-item textarea { min-height: 60px; resize: vertical; }
+    .admin-item.full-width { grid-column: 1 / -1; }
+    
+    .image-upload-area {
+      border: 2px dashed var(--gold-light);
+      border-radius: 14px;
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      background: var(--cream);
+    }
+    .image-upload-area:hover {
+      border-color: var(--gold);
+      background: var(--gold-pale);
+      transform: scale(1.01);
+    }
+    .image-upload-area i { font-size: 2.5rem; color: var(--gold); }
+    .image-upload-area p { color: #7a6b55; margin-top: 0.5rem; }
+    .image-preview { max-width: 200px; max-height: 150px; margin: 0.5rem auto; border-radius: 12px; border: 2px solid var(--gold-light); }
+    
+    .admin-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .admin-actions button {
+      padding: 0.7rem 1.8rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-primary {
+      background: var(--wine);
+      color: var(--white);
+      box-shadow: 0 4px 15px rgba(107, 29, 47, 0.3);
+    }
+    .btn-primary:hover {
+      background: var(--gold);
+      color: var(--wine-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 168, 76, 0.4);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--wine);
+      color: var(--wine);
+    }
+    .btn-outline:hover {
+      background: var(--wine);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+    .btn-gold {
+      background: var(--gold);
+      color: var(--wine-dark);
+    }
+    .btn-gold:hover {
+      background: var(--wine);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+    
+    .footer {
+      background: var(--white);
+      border-top: 3px solid var(--gold);
+      padding: 1.5rem 2rem;
+      margin-top: 3rem;
+    }
+    .footer-content {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer p { color: #7a6b55; font-size: 0.9rem; }
+    .footer-social { display: flex; gap: 0.8rem; }
+    .footer-social a {
+      color: var(--wine);
+      background: var(--cream);
+      padding: 0.5rem 0.8rem;
+      border-radius: 50px;
+      transition: var(--transition);
+      font-size: 1rem;
+    }
+    .footer-social a:hover {
+      background: var(--wine);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+      body { padding-top: 68px; }
+      .navbar { padding: 0 1rem; height: 68px; }
+      .hamburger { display: flex; }
+      .nav-menu {
+        position: fixed;
+        top: 68px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 68px);
+        background: var(--white);
+        flex-direction: column;
+        padding: 2rem 1.5rem;
+        gap: 0.8rem;
+        transition: var(--transition);
+        overflow-y: auto;
+        box-shadow: var(--shadow);
+      }
+      .nav-menu.active { left: 0; }
+      .nav-link {
+        width: 100%;
+        padding: 0.8rem 1.2rem;
+        font-size: 1rem;
+        border-radius: 12px;
+      }
+      .page-header { padding: 1.5rem; }
+      .page-header h1 { font-size: 1.6rem; }
+      .admin-container { padding: 1.2rem; }
+      .admin-grid { grid-template-columns: 1fr; }
+      .footer-content { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <a href="index.html">
+          <i class="fas fa-globe-africa"></i>
+          <span>Maxwell Amofa</span>
+        </a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+      <ul class="nav-menu" id="navMenu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+        <li class="nav-item"><a href="experience.html" class="nav-link">Experience</a></li>
+        <li class="nav-item"><a href="leadership.html" class="nav-link">Leadership</a></li>
+        <li class="nav-item"><a href="media.html" class="nav-link">Media</a></li>
+        <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+        <li class="nav-item"><a href="admin.html" class="nav-link admin-link active"><i class="fas fa-user-cog"></i> Admin</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Admin Panel</h1>
+      <p>Manage your profile content, images, and data</p>
+    </div>
+
+    <div class="admin-container">
+      <h2><i class="fas fa-sliders-h"></i> Content Management</h2>
+      
+      <div class="admin-grid">
+        <div class="admin-item full-width">
+          <label>🖼️ Upload Image for Slide</label>
+          <div class="image-upload-area" id="imageUploadArea">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Click or drag &amp; drop to upload</p>
+            <input type="file" id="imageUploadInput" accept="image/*" style="display: none;" />
+            <div id="imagePreviewContainer"></div>
+          </div>
+          <div style="margin-top: 0.8rem;">
+            <label>Or enter image URL:</label>
+            <input id="adminImageUrl" placeholder="/images/photo.jpg or https://example.com/photo.jpg" />
+          </div>
+        </div>
+
+        <div class="admin-item">
+          <label>📸 Slide Inscription</label>
+          <input id="adminInscription" />
+        </div>
+      </div>
+
+      <div style="margin: 1.5rem 0; font-weight: 600; color: var(--wine);">
+        ✏️ Edit Content <span style="font-weight: 400; color: #7a6b55;">(one per line)</span>
+      </div>
+
+      <div class="admin-grid">
+        <div class="admin-item"><label>🎓 Education</label><textarea id="adminEdu"></textarea></div>
+        <div class="admin-item"><label>💼 Professional</label><textarea id="adminProf"></textarea></div>
+        <div class="admin-item"><label>👥 Leadership</label><textarea id="adminLead"></textarea></div>
+        <div class="admin-item"><label>🏆 Awards</label><textarea id="adminAwards"></textarea></div>
+        <div class="admin-item"><label>🤝 Engagements</label><textarea id="adminEngagement"></textarea></div>
+        <div class="admin-item"><label>🎤 Conferences</label><textarea id="adminConference"></textarea></div>
+        <div class="admin-item"><label>❤️ Volunteerism</label><textarea id="adminVolunteer"></textarea></div>
+        <div class="admin-item"><label>📝 Articles</label><textarea id="adminArticles"></textarea></div>
+        <div class="admin-item"><label>📜 Non-degree</label><textarea id="adminNondegree"></textarea></div>
+        <div class="admin-item"><label>🔗 Other</label><textarea id="adminOther"></textarea></div>
+      </div>
+
+      <div class="admin-actions">
+        <button class="btn-primary" id="applyChangesBtn"><i class="fas fa-sync-alt"></i> Apply Changes</button>
+        <button class="btn-outline" id="resetDefaultBtn">Reset to Defaults</button>
+        <button class="btn-gold" id="exportDataBtn"><i class="fas fa-download"></i> Export Data</button>
+        <button class="btn-outline" id="importDataBtn"><i class="fas fa-upload"></i> Import Data</button>
+        <input type="file" id="importFileInput" accept=".json" style="display: none;" />
+      </div>
+
+      <p style="margin-top: 1.5rem; font-size: 0.85rem; color: #b8a88a; padding: 0.8rem 1.2rem; background: var(--gold-pale); border-radius: 12px;">
+        <i class="fas fa-info-circle"></i> 
+        Changes are stored in your browser's localStorage. For permanent storage, commit to GitHub.
+      </p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>© 2026 Maxwell Boamah Amofa · Human Rights Advocate</p>
+      <div class="footer-social">
+        <a href="https://www.linkedin.com/in/maxwell-boamah-amofa-3017a6261" target="_blank"><i class="fab fa-linkedin"></i></a>
+        <a href="https://x.com/maxwella55932" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.instagram.com/maxwellboamahamofa" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://youtube.com/@maxwellboamahamofa9375" target="_blank"><i class="fab fa-youtube"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ===== HAMBURGER MENU =====
+    document.addEventListener('DOMContentLoaded', function() {
+      const hamburger = document.getElementById('hamburger');
+      const navMenu = document.getElementById('navMenu');
+      if (hamburger && navMenu) {
+        hamburger.addEventListener('click', function() {
+          hamburger.classList.toggle('active');
+          navMenu.classList.toggle('active');
+        });
+        document.querySelectorAll('.nav-link').forEach(link => {
+          link.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+          });
+        });
+      }
+    });
+
+    // ===== DATA =====
+    const DEFAULT_DATA = {
+      inscription: 'Maxwell engages president of the European Commission',
+      imageUrl: '',
+      edu: [
+        'European University Viadrina, Germany – Diploma in Applied Peace and Conflict Studies',
+        'Arden University, United Kingdom – Bachelor of Law (LLB)',
+        'Kwame Nkrumah University of Science and Technology, Ghana – Bachelor of Arts in Political Studies',
+        'European University Viadrina, Germany – LLM international Human Rights and Humanitarian Law',
+        'Higher School of Economics, Russia – Master of Jurisprudence, Public law (Comparative)'
+      ],
+      prof: [
+        'Executive Director of International Partnership for African Development, Kumasi, Ghana',
+        'Research officer at West Africa Transitional Justice Center, Abuja Nigeria',
+        'Contributor (writer and editor) at RT international (Africa department), Moscow Russia',
+        'Legal Administrative Assistant, Ministry of Works and Housing (Rent Control Department) Ghana',
+        'Administrative Assistant at Libereco Partnership for Human Rights in Berlin Germany',
+        'Teacher and Administrative assistant – Discovery School in Moscow, Russia'
+      ],
+      lead: [
+        'Co-founder of Youth Coalition for Progress (Civil Society Organisation)',
+        'President of African Students Union - European University Viadrina Germany 2025/2026',
+        'Deputy Chairperson of the Judicial Committee – National Union of Ghanaian Students, Russia 2022/2023',
+        'President Faculty of Social Sciences (SOCIOSO) - KNUST, Ghana 2016/2017',
+        'Public Relations Officer of College of Humanities and Social Sciences (CoHSS) – KNUST 2015/2016',
+        'Editorial Board Member – Unity hall - KNUST 2014/2015'
+      ],
+      awards: ['Excellence in Advocacy Award 2023', 'Human Rights Defender Prize 2022'],
+      engagement: ['Meeting with EU Commission President', 'Dialogue with Ghana Ambassador to Russia'],
+      conference: ['UN African Development Forum 2024', 'Transitional Justice Conference Abuja 2023'],
+      volunteer: ['Community legal aid clinic, Kumasi', 'Youth mentorship program, Berlin'],
+      articles: ['"Human Rights in West Africa" – RT Africa', '"Peacebuilding in times of crisis" – IPAD blog'],
+      nondegree: ['Certificate in Mediation, Berlin', 'Diploma in Project Management, Ghana'],
+      other: ['Board member, Youth for Justice', 'Consultant, UNDP Ghana']
+    };
+
+    const DEFAULT_SLIDES = [
+      { inscription: DEFAULT_DATA.inscription, imageUrl: DEFAULT_DATA.imageUrl },
+      { inscription: 'Maxwell calls on Ghana\'s Ambassador to Russia', imageUrl: '' },
+      { inscription: 'Maxwell engages EU Project Lead for Sub-Saharan Africa', imageUrl: '' }
+    ];
+
+    let state = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    let slides = JSON.parse(JSON.stringify(DEFAULT_SLIDES));
+    let currentSlideIndex = 0;
+
+    // ===== PERSISTENCE =====
+    function saveState() {
+      try {
+        localStorage.setItem('maxwellProfile', JSON.stringify(state));
+        localStorage.setItem('maxwellSlides', JSON.stringify(slides));
+      } catch(e) { console.log('Storage error:', e); }
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem('maxwellProfile');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state = parsed;
+          slides[0].inscription = state.inscription;
+          slides[0].imageUrl = state.imageUrl;
+          const savedSlides = localStorage.getItem('maxwellSlides');
+          if (savedSlides) {
+            const parsedSlides = JSON.parse(savedSlides);
+            if (parsedSlides && parsedSlides.length === 3) slides = parsedSlides;
+          }
+          return true;
+        }
+      } catch(e) { console.log('Error loading saved state'); }
+      return false;
+    }
+
+    // ===== IMAGE UPLOAD =====
+    function handleImageUpload(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imageDataUrl = e.target.result;
+        slides[currentSlideIndex].imageUrl = imageDataUrl;
+        state.imageUrl = imageDataUrl;
+        document.getElementById('imagePreviewContainer').innerHTML = `<img src="${imageDataUrl}" class="image-preview" alt="Preview" />`;
+        saveState();
+        document.getElementById('adminImageUrl').value = 'Image uploaded ✓';
+        alert('✅ Image uploaded! Click "Apply Changes" to save all content.');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ===== RENDER =====
+    function renderAdmin() {
+      document.getElementById('adminInscription').value = state.inscription;
+      document.getElementById('adminImageUrl').value = state.imageUrl && state.imageUrl.startsWith('data:') ? 'Image uploaded (base64)' : state.imageUrl;
+      document.getElementById('adminEdu').value = state.edu.join('\n');
+      document.getElementById('adminProf').value = state.prof.join('\n');
+      document.getElementById('adminLead').value = state.lead.join('\n');
+      document.getElementById('adminAwards').value = state.awards.join('\n');
+      document.getElementById('adminEngagement').value = state.engagement.join('\n');
+      document.getElementById('adminConference').value = state.conference.join('\n');
+      document.getElementById('adminVolunteer').value = state.volunteer.join('\n');
+      document.getElementById('adminArticles').value = state.articles.join('\n');
+      document.getElementById('adminNondegree').value = state.nondegree.join('\n');
+      document.getElementById('adminOther').value = state.other.join('\n');
+    }
+
+    // ===== ADMIN ACTIONS =====
+    function applyFromAdmin() {
+      state.inscription = document.getElementById('adminInscription').value.trim() || state.inscription;
+      const imageUrlInput = document.getElementById('adminImageUrl').value.trim();
+      if (imageUrlInput && !imageUrlInput.startsWith('Image uploaded')) {
+        slides[currentSlideIndex].imageUrl = imageUrlInput;
+        state.imageUrl = imageUrlInput;
+      }
+      slides[0].inscription = state.inscription;
+      slides[0].imageUrl = state.imageUrl;
+      
+      state.edu = document.getElementById('adminEdu').value.split('\n').filter(s => s.trim() !== '');
+      state.prof = document.getElementById('adminProf').value.split('\n').filter(s => s.trim() !== '');
+      state.lead = document.getElementById('adminLead').value.split('\n').filter(s => s.trim() !== '');
+      state.awards = document.getElementById('adminAwards').value.split('\n').filter(s => s.trim() !== '');
+      state.engagement = document.getElementById('adminEngagement').value.split('\n').filter(s => s.trim() !== '');
+      state.conference = document.getElementById('adminConference').value.split('\n').filter(s => s.trim() !== '');
+      state.volunteer = document.getElementById('adminVolunteer').value.split('\n').filter(s => s.trim() !== '');
+      state.articles = document.getElementById('adminArticles').value.split('\n').filter(s => s.trim() !== '');
+      state.nondegree = document.getElementById('adminNondegree').value.split('\n').filter(s => s.trim() !== '');
+      state.other = document.getElementById('adminOther').value.split('\n').filter(s => s.trim() !== '');
+      
+      saveState();
+      renderAdmin();
+      alert('✅ All changes saved to your browser!');
+    }
+
+    function resetToDefault() {
+      if (confirm('Reset all content to defaults? This cannot be undone.')) {
+        state = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        slides = JSON.parse(JSON.stringify(DEFAULT_SLIDES));
+        localStorage.removeItem('maxwellProfile');
+        localStorage.removeItem('maxwellSlides');
+        document.getElementById('imagePreviewContainer').innerHTML = '';
+        renderAdmin();
+        alert('✅ Reset to defaults');
+      }
+    }
+
+    function exportData() {
+      const exportObj = { state, slides };
+      const dataStr = JSON.stringify(exportObj, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'profile-data.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.state) state = data.state;
+          if (data.slides) slides = data.slides;
+          saveState();
+          renderAdmin();
+          alert('✅ Data imported successfully!');
+        } catch(err) {
+          alert('❌ Error importing data. Please check the file format.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ===== EVENT LISTENERS =====
+    document.addEventListener('DOMContentLoaded', function() {
+      loadState();
+      renderAdmin();
+
+      // Image upload
+      const uploadArea = document.getElementById('imageUploadArea');
+      const fileInput = document.getElementById('imageUploadInput');
+
+      uploadArea.addEventListener('click', () => fileInput.click());
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#C9A84C';
+        uploadArea.style.background = '#F5EDD6';
+      });
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = '#E8D5A3';
+        uploadArea.style.background = '#FAF6EE';
+      });
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#E8D5A3';
+        uploadArea.style.background = '#FAF6EE';
+        if (e.dataTransfer.files.length > 0) {
+          handleImageUpload(e.dataTransfer.files[0]);
+        }
+      });
+      fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+          handleImageUpload(this.files[0]);
+        }
+      });
+
+      // Buttons
+      document.getElementById('applyChangesBtn').addEventListener('click', applyFromAdmin);
+      document.getElementById('resetDefaultBtn').addEventListener('click', resetToDefault);
+      document.getElementById('exportDataBtn').addEventListener('click', exportData);
+      document.getElementById('importDataBtn').addEventListener('click', function() {
+        document.getElementById('importFileInput').click();
+      });
+      document.getElementById('importFileInput').addEventListener('change', function() {
+        if (this.files.length > 0) {
+          importData(this.files[0]);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
